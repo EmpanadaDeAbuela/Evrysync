@@ -1,6 +1,8 @@
 //Selenium WebDriver.
 //npm install selenium-webdriver typescript ts-node dotenv @types/node @types/selenium-webdriver
-//Para ejecutar: npx ts-node test_login.ts
+//npm i -D tsx
+//npx ts-node test_login.ts  (no anda creo)
+//Para ejecutar: npx tsx test_login.ts 
 
 import { Builder, By, until, WebDriver, Capabilities } from 'selenium-webdriver';
 import 'dotenv/config';
@@ -21,7 +23,6 @@ if (!BROWSERSTACK_USERNAME || !BROWSERSTACK_ACCESS_KEY || !FRONTEND_URL || !TEST
 
 const capabilities: Capabilities = new Capabilities({
     'browserName': 'Chrome', 
-    'platformName': 'android', 
     'deviceName': 'Samsung Galaxy S22', 
     'os': 'android',
     'os_version': '12.0',
@@ -54,12 +55,12 @@ async function runTest(): Promise<void> {
         console.log("Página de Login cargada. Iniciando la secuencia de autenticación...");
 
         // C. INTERACTUAR Y AUTENTICARSE
-        
-        const emailInput = await driver.findElement(By.id('bs_user')); 
+
+        const emailInput = await driver.findElement(By.css('input.bs_user')); 
         await emailInput.sendKeys(TEST_USER);
         console.log("Usuario ingresado.");
 
-        const passwordInput = await driver.findElement(By.id('bs_password'));
+        const passwordInput = await driver.findElement(By.css('input.bs_password'));
         await passwordInput.sendKeys(TEST_PASS);
         console.log("Contraseña ingresada.");
 

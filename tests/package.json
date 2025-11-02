@@ -1,12 +1,14 @@
 {
-  "devDependencies": {
-    "@types/node": "^24.9.2",
-    "@types/selenium-webdriver": "^4.35.3",
-    "dotenv": "^17.2.3",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
-  },
+  "type": "module",
   "dependencies": {
-    "selenium-webdriver": "^4.38.0"
+    "dotenv": "^16.3.1",
+    "selenium-webdriver": "^4.16.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.3.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/selenium-webdriver": "^4.1.21",
+    "tsx": "^4.20.6"
   }
 }
