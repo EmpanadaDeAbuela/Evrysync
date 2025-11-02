@@ -1,0 +1,6 @@
+[submodule "Back"]
+	path = Back
+	url = https://github.com/Instituto-Politecnico-Modelo/evrysyncBack
+[submodule "Front"]
+	path = Front
+	url = https://github.com/EmpanadaDeAbuela/evrysyncFront
