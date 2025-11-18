@@ -15,7 +15,7 @@ platforms:
     deviceOrientation: portrait
 browserstackLocal: true
 buildName: browserstack-build-1
-projectName: BrowserStack Sample
+projectName: Demo Project
 debug: false
-networkLogs: false
+networkLogs: true
 consoleLogs: errors
