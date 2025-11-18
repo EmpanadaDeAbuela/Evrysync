@@ -5,7 +5,8 @@
 //Para ejecutar: npx tsx test_login.ts 
 
 import { Builder, By, until, WebDriver, Capabilities } from 'selenium-webdriver';
-import 'dotenv/config';
+import * as dotenv from "dotenv";
+dotenv.config();
 
 
 const BROWSERSTACK_USERNAME = process.env.BROWSERSTACK_USERNAME as string; 
@@ -21,7 +22,7 @@ if (!BROWSERSTACK_USERNAME || !BROWSERSTACK_ACCESS_KEY || !FRONTEND_URL || !TEST
 }
 
 
-const capabilities: Capabilities = new Capabilities({
+/*const capabilities: Capabilities = new Capabilities({
     'browserName': 'Chrome', 
     'deviceName': 'Samsung Galaxy S22', 
     'os': 'android',
@@ -31,21 +32,33 @@ const capabilities: Capabilities = new Capabilities({
     'name': 'Prueba de Login Mobile E2E',
     'browserstack.debug': 'true',
     'browserstack.networkLogs': 'true'
-});
+});*/
 
+  const capabilities = {
+    browserName: "Chrome",
+    browserVersion: "latest",
+    "bstack:options": {
+      os: "Windows",
+      osVersion: "11",
+      buildName: "evrysync-test",
+      sessionName: "Login desde menú desplegable",
+      userName: BROWSERSTACK_USERNAME,
+      accessKey: BROWSERSTACK_ACCESS_KEY,
+    },
+  };
 
-async function runTest(): Promise<void> {
-    let driver: WebDriver | undefined;
+async function runTest(): Promise<void> { 
 
+    let driver;
     try {
         console.log("Inicializando WebDriver...");
         
         driver = await new Builder()
-            .usingServer(`http://${BROWSERSTACK_USERNAME}:${BROWSERSTACK_ACCESS_KEY}@hub-cloud.browserstack.com/wd/hub`)
-            .withCapabilities(capabilities)
-            .build();
+        .usingServer("https://hub.browserstack.com/wd/hub")
+        .withCapabilities(capabilities)
+        .build();
             
-        console.log(`Driver inicializado en ${capabilities.get('deviceName')}. Navegando a ${FRONTEND_URL}...`);
+        /*console.log(`Driver inicializado en ${capabilities.get('deviceName')}. Navegando a ${FRONTEND_URL}...`);*/
 
         await driver.get(FRONTEND_URL);
 
@@ -84,4 +97,128 @@ async function runTest(): Promise<void> {
     }
 }
 
+
 runTest();
+/*
+
+import * as dotenv from "dotenv";
+ 
+dotenv.config();
+ 
+const USERNAME = process.env.BROWSERSTACK_USERNAME!;
+const ACCESS_KEY = process.env.BROWSERSTACK_ACCESS_KEY!;
+const APP_URL = "https://trythout.policloudservices.ipm.edu.ar";
+ 
+async function runTest() {
+  const capabilities = {
+    browserName: "Chrome",
+    browserVersion: "latest",
+    "bstack:options": {
+      os: "Windows",
+      osVersion: "11",
+      buildName: "Trythout BrowserStack Tests",
+      sessionName: "Login desde menú desplegable",
+      userName: USERNAME,
+      accessKey: ACCESS_KEY,
+    },
+  };
+ 
+  const driver = await new Builder()
+    .usingServer("https://hub.browserstack.com/wd/hub")
+    .withCapabilities(capabilities)
+    .build();
+ 
+  try {
+    console.log("🔹 Abriendo Trythout...");
+    await driver.get(APP_URL);
+ 
+    // Esperar a que el menú (cruz blanca) sea visible
+    console.log("🔹 Buscando el menú desplegable...");
+    const menuBtn = await driver.wait(
+      until.elementLocated(
+        By.xpath("//button[contains(@class, 'dropdown-btn') or contains(., '✖') or contains(@aria-label, 'menu')]")
+      ),
+      10000
+    );
+    await menuBtn.click();
+ 
+    // Espera extra tras abrir el menú (por animaciones)
+    await driver.sleep(1500);
+ 
+    // Esperar la opción "Log in"
+    console.log("🔹 Buscando opción 'Log in'...");
+    let loginOption;
+    try {
+      loginOption = await driver.wait(
+        until.elementLocated(By.xpath("//a[contains(., 'Log in') or contains(., 'Sign in') or contains(., 'Iniciar sesión') or contains(., 'Acceder') or contains(., 'Entrar')]")),
+        7000
+      );
+    } catch (e) {
+      // Si no se encuentra <a>, probar con <button>
+      loginOption = await driver.wait(
+        until.elementLocated(By.xpath("//button[contains(., 'Login')]")),
+        7000
+      );
+    }
+    await loginOption.click();
+ 
+    // Esperar a que cargue el formulario de login
+    console.log("🔹 Esperando el formulario de login...");
+    const usernameInput = await driver.wait(
+      until.elementLocated(By.xpath("//*[@id='user']")),
+      10000
+    );
+    const passwordInput = await driver.wait(
+      until.elementLocated(By.xpath("//*[@id='password']")),
+      10000
+    );
+ 
+    // Escribir credenciales
+    console.log("🧠 Ingresando credenciales...");
+    await usernameInput.sendKeys("alem");
+    await passwordInput.sendKeys("Tomas369");
+ 
+    // Clic en el botón de Login
+    console.log("🚀 Enviando formulario...");
+    let submitBtn;
+    try {
+      submitBtn = await driver.wait(
+        until.elementLocated(By.xpath("//button[@type='submit']")),
+        7000
+      );
+    } catch (e) {
+      // Si no se encuentra por type, probar por texto
+      submitBtn = await driver.wait(
+        until.elementLocated(By.xpath("//button[contains(., 'Login') or contains(., 'Sign in') or contains(., 'Entrar') or contains(., 'Iniciar sesión') or contains(., 'Acceder')]")),
+        7000
+      );
+    }
+    await submitBtn.click();
+ 
+    // Verificar login exitoso abriendo el menú y buscando 'Perfil'
+    console.log("✅ Abriendo menú para verificar 'Perfil'...");
+    const menuBtnAfterLogin = await driver.wait(
+      until.elementLocated(
+        By.xpath("//button[contains(@class, 'dropdown-btn') or contains(., '✖') or contains(@aria-label, 'menu')]")
+      ),
+      10000
+    );
+    await menuBtnAfterLogin.click();
+    await driver.sleep(1500);
+ 
+    await driver.wait(
+      until.elementLocated(
+        By.xpath("//*[contains(., 'Log out')]")
+      ),
+      10000
+    );
+ 
+    console.log("🎉 Login exitoso en Trythout y 'Perfil' visible en el menú.");
+  } catch (error) {
+    console.error("❌ Error durante el test:", error);
+  } finally {
+    await driver.quit();
+  }
+}
+ 
+runTest();*/
